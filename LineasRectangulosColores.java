@@ -259,6 +259,7 @@ public class LineasRectangulosColores {
         return tablero;
     }
 
+	// Metodo para verificar si la jugada es valida
     public static /*@ pure */ int[][] obtenerJugadaValida(MaquinaDeTrazados mt, int[][] tablero, int[] tableroPosicionesX, int[] tableroPosicionesY, int valor, int valorx, int valory){
         int[][] nuevoTablero = tablero;
         boolean comprobarJugadaValida = false;
@@ -266,11 +267,15 @@ public class LineasRectangulosColores {
         while ( u < 6) {
             System.out.println("Debe ingresar la coordenada origen de su figura a mover");
             System.out.println("Por favor ingrese el numero de columna de la figura a mover: ");
+		// ESTE ES UNO --->
             Scanner leer1 = new Scanner (System.in);
             int coordenada1 = leer1.nextInt();
+		// <--- ESTE ES UNO
+		// ESTE ES UNO --->
             System.out.println("Por favor ingrese el numero de fila de la figura a mover: ");
             Scanner leer2 = new Scanner (System.in);
             int coordenada2 = leer2.nextInt();
+		// <--- ESTE ES UNO
             if (tablero[coordenada1][coordenada2] != 0) {
                 comprobarJugadaValida = true;
                 while (comprobarJugadaValida == true) {
@@ -320,11 +325,15 @@ public class LineasRectangulosColores {
             if (comprobarJugadaValida == true) {
                 System.out.println("Ahora debe ingresar la coordenada destino de su figura a mover");
                 System.out.println("Por favor ingrese el numero destino de columna de la figura a mover: ");
+		// ESTE ES UNO --->
                 Scanner leer3 = new Scanner (System.in);
                 int coordenada3 = leer3.nextInt();
+		// <--- ESTE ES UNO
                 System.out.println("Por favor ingrese el numero destino de fila de la figura a mover: ");
+		// ESTE ES UNO --->
                 Scanner leer4 = new Scanner (System.in);
                 int coordenada4 = leer4.nextInt();
+		// <--- ESTE ES UNO
                 if (tablero[coordenada3][coordenada4] == 0) {
                     nuevoTablero[coordenada3][coordenada4] = tablero[coordenada1][coordenada2];
                     nuevoTablero[coordenada1][coordenada2] = 0;
