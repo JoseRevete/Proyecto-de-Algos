@@ -113,6 +113,7 @@ public class LineasRectangulosColores {
         int[][] nuevoTablero = tablero;
         boolean finalizarJuego = true;
         while (finalizarJuego == true) {
+		// AQUI ESTA
             int[][] tableroParaComparar = devolverTablero(nuevoTablero);
             nuevoTablero = obtenerJugadaValida(mt, nuevoTablero, tableroPosicionesX, tableroPosicionesY, valor, valorx, valory);
             //if (tableroParaComparar == nuevoTablero) {System.out.println("No realizo ningun cambio"); finalizarJuego = false;}
