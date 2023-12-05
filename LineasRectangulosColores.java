@@ -111,16 +111,20 @@ public class LineasRectangulosColores {
         mt.mostrar();
         
         int[][] nuevoTablero = tablero;
-        boolean finalizarJuego = false;
-        while (finalizarJuego == false) {
+        boolean finalizarJuego = true;
+        while (finalizarJuego == true) {
+            int[][] tableroParaComparar = devolverTablero(nuevoTablero);
             nuevoTablero = obtenerJugadaValida(mt, nuevoTablero, tableroPosicionesX, tableroPosicionesY, valor, valorx, valory);
-            if (tableroLleno(nuevoTablero) == true) {System.out.println("El juego ha acabado, el tablero esta lleno. Gracias por jugar"); finalizarJuego = true; break;}
-            else {
-                nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY);
-                proximosObjetos = obtenerProximosObjetos(mt, piezas, valor);
-            }
+            //if (tableroParaComparar == nuevoTablero) {System.out.println("No realizo ningun cambio"); finalizarJuego = false;}
+            //else {
+                if (tableroLleno(nuevoTablero) == true) {System.out.println("El juego ha acabado, el tablero esta lleno. Gracias por jugar"); break;}
+                else {
+                    nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY);
+                    proximosObjetos = obtenerProximosObjetos(mt, piezas, valor);
+                }//}
             mt.repintar();
         }
+        mt.terminar();
     }
 
     // Metodo para saludar y dar la bienvenida al usuario
@@ -259,6 +263,24 @@ public class LineasRectangulosColores {
         return tablero;
     }
 
+    public static /*@ pure */ int pedirCoordenada(){
+        Scanner leer = new Scanner (System.in);
+        int coordenada = leer.nextInt();
+        int a = 0;
+        while (4 > a) {
+            if (0 <= coordenada && coordenada <= 8) {break;}
+            else {
+                System.out.println("Coordenada invalida, intente de nuevo");
+                leer = new Scanner (System.in);
+                coordenada = leer.nextInt(); 
+                a++;
+            }
+        }
+        if (a >= 4) {coordenada = -1;}
+        else {}
+        return coordenada;
+    }
+
 	// Metodo para verificar si la jugada es valida
     public static /*@ pure */ int[][] obtenerJugadaValida(MaquinaDeTrazados mt, int[][] tablero, int[] tableroPosicionesX, int[] tableroPosicionesY, int valor, int valorx, int valory){
         int[][] nuevoTablero = tablero;
@@ -267,15 +289,13 @@ public class LineasRectangulosColores {
         while ( u < 6) {
             System.out.println("Debe ingresar la coordenada origen de su figura a mover");
             System.out.println("Por favor ingrese el numero de columna de la figura a mover: ");
-		// ESTE ES UNO --->
-            Scanner leer1 = new Scanner (System.in);
-            int coordenada1 = leer1.nextInt();
-		// <--- ESTE ES UNO
-		// ESTE ES UNO --->
+            int coordenada1 = pedirCoordenada();
+            if (coordenada1 == -1) {u = 6; break;}
+            else {}
             System.out.println("Por favor ingrese el numero de fila de la figura a mover: ");
-            Scanner leer2 = new Scanner (System.in);
-            int coordenada2 = leer2.nextInt();
-		// <--- ESTE ES UNO
+            int coordenada2 = pedirCoordenada();
+            if (coordenada2 == -1) {u = 6; break;}
+            else {}
             if (tablero[coordenada1][coordenada2] != 0) {
                 comprobarJugadaValida = true;
                 while (comprobarJugadaValida == true) {
@@ -325,15 +345,13 @@ public class LineasRectangulosColores {
             if (comprobarJugadaValida == true) {
                 System.out.println("Ahora debe ingresar la coordenada destino de su figura a mover");
                 System.out.println("Por favor ingrese el numero destino de columna de la figura a mover: ");
-		// ESTE ES UNO --->
-                Scanner leer3 = new Scanner (System.in);
-                int coordenada3 = leer3.nextInt();
-		// <--- ESTE ES UNO
+		    	int coordenada3 = pedirCoordenada();
+                if (coordenada3 == -1) {u = 6; break;}
+                else {}
                 System.out.println("Por favor ingrese el numero destino de fila de la figura a mover: ");
-		// ESTE ES UNO --->
-                Scanner leer4 = new Scanner (System.in);
-                int coordenada4 = leer4.nextInt();
-		// <--- ESTE ES UNO
+                int coordenada4 = pedirCoordenada();
+                if (coordenada4 == -1) {u = 6; break;}
+                else {}
                 if (tablero[coordenada3][coordenada4] == 0) {
                     nuevoTablero[coordenada3][coordenada4] = tablero[coordenada1][coordenada2];
                     nuevoTablero[coordenada1][coordenada2] = 0;
@@ -397,4 +415,6 @@ public class LineasRectangulosColores {
         i++;}
         return comprobarTablero;
     }
+
+    public static /*@ pure */ int[][] devolverTablero(int[][] nuevoTablero) {return nuevoTablero;}
 }
