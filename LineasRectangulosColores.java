@@ -47,8 +47,8 @@ public class LineasRectangulosColores {
         int valor = 0;
         if (mt.XMAX >= mt.YMAX) {valor = mt.YMAX*70/100;}
         else {valor = mt.XMAX*70/100;}
-        mt.dibujarRectanguloLleno(mt.XMAX/2 - valor/2 + valor/6 - valor/60, mt.YMAX/2 - valor/2 + valor/6 - valor/60, valor + valor/30, valor + valor/30, Colores.BLACK);
-        mt.dibujarRectanguloLleno(mt.XMAX/2 - valor/2 + valor/6, mt.YMAX/2 - valor/2 + valor/6, valor, valor, Colores.WHITE);
+        mt.dibujarRectanguloLleno(mt.XMAX/2 - valor/2 + valor/6 - valor/60, mt.YMAX/2 - valor/2 + valor/6 - valor/60, valor + valor/35, valor + valor/40, Colores.BLACK);
+        mt.dibujarRectanguloLleno(mt.XMAX/2 - valor/2 + valor/6, mt.YMAX/2 - valor/2 + valor/6, valor - valor/100, valor - valor/100, Colores.WHITE);
         int valorx = mt.XMAX/2 - valor/2 + valor/6;
         int valory = mt.YMAX/2 - valor/2 + valor/6;
         casillasTableroHorizontal(mt, valorx, valory, valor);
