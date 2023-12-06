@@ -133,6 +133,7 @@ public class LineasRectangulosColores {
                 else {
                     nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY, valorx, valory);
                     proximosObjetos = obtenerProximosObjetos(mt, piezas, valor);
+                    if (tableroLleno(nuevoTablero) == true) {System.out.println("El juego ha acabado, el tablero esta lleno. Gracias por jugar"); break;}
                 }
             }
             mt.repintar();
@@ -149,17 +150,22 @@ public class LineasRectangulosColores {
         Scanner leer = new Scanner (System.in);
         String jugador = leer.nextLine();
         System.out.println("Hola " + jugador + ".");
-        System.out.println("El juego consiste en ir moviendo los circulos y cuadrados para formar lineas de 5 circulos o cuadrados de tamaño 2x2 o mayor, respectivamente.");
-        System.out.println("Solo lo debe mover a una posicion en donde no hayan circulos ni cuadrados, para poder moverlos, este debe ser al menos un espacio a su alrededor libre de circulos y cuadrados");
-        System.out.println("Se suman puntos cuando alinie de forma horizontal, vertical o diagonal 5 circulos, o cuando se formen cuadrados de 2x2 o mayores");
+        System.out.println("El juego consiste en ir moviendo los circulos y cuadrados para formar lineas de 5 circulos (o mayor) o cuadrados de tamaño 2x2 (o mayor), respectivamente.");
+        System.out.println("Solo lo debe mover a una casilla en donde no hayan circulos ni cuadrados. Para poder moverlos, este debe tener a su alrededor al menos un espacio libre de circulos y cuadrados");
+        System.out.println("Solo puede seleccionar casillas (para mover un objeto desde dicha casilla a otra) si tiene un objeto en ella");
+        System.out.println("Se suman puntos cuando alinie de forma horizontal, vertical o diagonal 5 circulos (o mas), o cuando se formen cuadrados de 2x2 (o mayores)");
         System.out.println("La tabla de puntaje es:");
-        System.out.println("Número de objetos alineados  |  Puntos que se obtienen");
+        System.out.println("    ");
+        System.out.println(" Número de objetos alineados | Puntos que se obtienen ");
         System.out.println("------------------------------------------------------");
         System.out.println("              4              |             5          ");
         System.out.println("              5              |             10         ");
         System.out.println("              6              |             12         ");
         System.out.println("              7              |             18         ");
         System.out.println("           8 o mas           |             40         ");
+        System.out.println("   ");
+        System.out.println("Las coordenadas de las casillas se deben dar de la forma numero de columna ---> ejecutar ---> numero de fila. De forma contraria, dara error");
+        System.out.println("Disfrute el juego :)");
         return jugador;
     }
 
@@ -332,7 +338,6 @@ public class LineasRectangulosColores {
             if (piezasProximas[i] == 7) { mt.dibujarRectanguloLleno(mt.XMAX/20 + valor/4 + desplazamiento, mt.YMAX/10, valor/9, valor/9, color);}
             else {mt.dibujarOvaloLleno(mt.XMAX/20 + valor/4 + desplazamiento, mt.YMAX/10, valor/9, valor/9, color);}
             desplazamiento = desplazamiento + valor/18 + valor/9;
-            mt.mostrar();
             i++;}
         return piezasProximas;
     }
@@ -353,7 +358,7 @@ public class LineasRectangulosColores {
         int[][] tablero = nuevoTablero;
         mt.dibujarRectanguloLleno(mt.XMAX/20 + valor/4 + valor/18, mt.YMAX/10 - mt.YMAX/15, valor/2 , valor/4, Colores.DARK_GRAY);
         //@ maintaining i <= proximosObjetos.length;
-        //@ decreases 81 - h;
+        //@ decreases 1000 - h;
         while (i < proximosObjetos.length) {
             int x = (int) (Math.random()*nuevoTablero.length);
             int y = (int) (Math.random()*nuevoTablero.length);
@@ -429,35 +434,35 @@ public class LineasRectangulosColores {
             else {}
             // si la coordenada dada contiene un objeto, se pocede
             if (tablero[coordenada1][coordenada2] != 0) {
-                comprobarJugadaValida = true;
                 int h = 0;
-                //@ maintaining comprobarJugadaValida == true;
-                //@ decreases h;
-                while (comprobarJugadaValida == true) {
+                comprobarJugadaValida =true;
+                //@ maintaining 7 >= h;
+                //@ decreases 7 - h;
+                while (6 > h) {
                     // se evaluan los casos de dificultad para ver si el objeto se puede mover
                     if (coordenada1 == 8 && coordenada2 == 8) {
-                        if (tablero[7][7] == 0 || tablero[7][8] == 0 || tablero[8][7] == 0){break;}
+                        if (tablero[7][7] == 0 || tablero[7][8] == 0 || tablero[8][7] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else if (coordenada1 == 0 && coordenada2 == 0) {
-                        if (tablero[0][1] == 0 || tablero[1][1] == 0 || tablero[1][0] == 0){break;}
+                        if (tablero[0][1] == 0 || tablero[1][1] == 0 || tablero[1][0] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else if (coordenada1 == 0 && coordenada2 == 8) {
-                        if (tablero[0][7] == 0 || tablero[1][7] == 0 || tablero[1][8] == 0){break;}
+                        if (tablero[0][7] == 0 || tablero[1][7] == 0 || tablero[1][8] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else if (coordenada1 == 8 && coordenada2 == 0) {
-                        if (tablero[7][1] == 0 || tablero[8][1] == 0 || tablero[7][0] == 0){break;}
+                        if (tablero[7][1] == 0 || tablero[8][1] == 0 || tablero[7][0] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else if (coordenada1 == 8 && coordenada2 != 0) {
-                        if (tablero[8][coordenada2 -1] == 0 || tablero[8][coordenada2 +1] == 0 || tablero[7][coordenada2 -1] == 0 || tablero[7][coordenada2] == 0 || tablero[7][coordenada2 +1] == 0){break;}
+                        if (tablero[8][coordenada2 -1] == 0 || tablero[8][coordenada2 +1] == 0 || tablero[7][coordenada2 -1] == 0 || tablero[7][coordenada2] == 0 || tablero[7][coordenada2 +1] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else if (coordenada1 != 0 && coordenada2 == 8) {
-                        if (tablero[coordenada1-1][7] == 0 || tablero[coordenada1-1][8] == 0 || tablero[coordenada1][7] == 0 || tablero[coordenada1+1][7] == 0 || tablero[coordenada1+1][8] == 0){break;}
+                        if (tablero[coordenada1-1][7] == 0 || tablero[coordenada1-1][8] == 0 || tablero[coordenada1][7] == 0 || tablero[coordenada1+1][7] == 0 || tablero[coordenada1+1][8] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else if (coordenada1 == 0 && coordenada2 != 0) {
-                        if (tablero[0][coordenada2 -1] == 0 || tablero[0][coordenada2 +1] == 0 || tablero[1][coordenada2 -1] == 0 || tablero[1][coordenada2] == 0 || tablero[1][coordenada2 +1] == 0){break;}
+                        if (tablero[0][coordenada2 -1] == 0 || tablero[0][coordenada2 +1] == 0 || tablero[1][coordenada2 -1] == 0 || tablero[1][coordenada2] == 0 || tablero[1][coordenada2 +1] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else if (coordenada1 != 0 && coordenada2 == 0) {
-                        if (tablero[coordenada1-1][0] == 0 || tablero[coordenada1-1][1] == 0 || tablero[coordenada1][1] == 0 || tablero[coordenada1+1][0] == 0 || tablero[coordenada1+1][1] == 0){break;}
+                        if (tablero[coordenada1-1][0] == 0 || tablero[coordenada1-1][1] == 0 || tablero[coordenada1][1] == 0 || tablero[coordenada1+1][0] == 0 || tablero[coordenada1+1][1] == 0){h=7;break;}
                         else {comprobarJugadaValida= false;}}
                     else {
                         int coord1 = coordenada1 - 1;
@@ -468,19 +473,21 @@ public class LineasRectangulosColores {
                         while (3 > i) {
                             int j = 0;
                             int coord2 = coordenada2 - 1;
-                            if (comprobarJugadaValida == true) {break;}
+                            if (comprobarJugadaValida == true) {h=7;break;}
                             //@ maintaining 3 >= j;
                             //@ decreases 3 - j;
                             while ( 3 > j ){
-                                if (tablero[coord1][coord2] == 0) {comprobarJugadaValida = true;break;}
+                                if (tablero[coord1][coord2] == 0) {comprobarJugadaValida = true;h=7;break;}
                                 else
                                 coord2++;
                                 j++;}
                             coord1++;
                             i++;}
                         break;}
+                        h++;
                 }
-                q=5;
+                if (comprobarJugadaValida == true) {q=5;}
+                else {q++;System.out.println("La jugada que intenta realizar no es valida, el objeto se encuentra rodeado de otros obejtos. Intente de nuevo");}
             }
             else {System.out.println("La posicion que indicas en que cual esta el objeto que intentas mover esta vacia. Intenta de nuevo");q++;}
             }
@@ -511,14 +518,13 @@ public class LineasRectangulosColores {
                     dibujarAlMover(mt,coordenada3,coordenada4,valor,tableroPosicionesX,tableroPosicionesY,nuevoTablero);
                     casillasTableroHorizontal(mt, valorx, valory, valor);
                     casillasTableroVertical(mt, valorx, valory, valor);
-                    mt.repintar();
                     q=5;
                     u=8;
                     break;
                 }
                 else {System.out.println("La coordenada destino que esta planteando ya se encuentra ocupada por un objeto. Intente de nuevo");q++;}
             }
-            else {System.out.println("La jugada que intenta realizar no es valida, el objeto se encuentra rodeado de otros obejtos. Intente de nuevo");q++;}
+            else {System.out.println("La jugada que intenta realizar no es valida, el objeto se encuentra rodeado de otros objetos. Intente de nuevo");q++;}
             }
             if(q < 5) {u=6; break;}
             else {break;}
@@ -550,7 +556,6 @@ public class LineasRectangulosColores {
 
             if (nuevoTablero[coordenada3][coordenada4] == 7) { mt.dibujarRectanguloLleno(tableroPosicionesX[coordenada3], tableroPosicionesY[coordenada4], valor/9, valor/9, color);}
             else {mt.dibujarOvaloLleno(tableroPosicionesX[coordenada3], tableroPosicionesY[coordenada4], valor/9, valor/9, color);}
-            mt.mostrar();
     }
 
     // Metodo para dibujar los objetos que era proximos en el tablero
@@ -575,7 +580,6 @@ public class LineasRectangulosColores {
 
             if (objeto == 7) { mt.dibujarRectanguloLleno(tableroPosicionesX[x], tableroPosicionesY[y], valor/9, valor/9, color);}
             else {mt.dibujarOvaloLleno(tableroPosicionesX[x], tableroPosicionesY[y], valor/9, valor/9, color);}
-            mt.mostrar();
     }
 
     // Metodo que verifica si el tablero esta lleno
