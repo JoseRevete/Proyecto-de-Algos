@@ -3,8 +3,11 @@ import java.awt.Font;
 
 public class LineasRectangulosColores {
 
+    // ejecucion del juego
     public static void main(String[] args) {
         inicializarJuego();
+
+        // Dibujo de tablero
         MaquinaDeTrazados mt = new MaquinaDeTrazados(700,700, "Juego Tablero", Colores.DARK_GRAY);
         mt.dibujarOvaloLleno(mt.XMAX/2 - 150, mt.YMAX/2 -150, mt.XMAX, mt.YMAX, Colores.GRAY);
         mt.dibujarOvaloLleno(mt.XMAX/2 - 110, mt.YMAX/2 -110, mt.XMAX, mt.YMAX, Colores.BLACK);
@@ -52,6 +55,8 @@ public class LineasRectangulosColores {
         int[] tableroPosicionesX = new int[9];
         int i = 0;
         int j;
+
+        // Posicion de cada casilla del tablero en x y y
         while (tableroPosicionesX.length > i) {
             tableroPosicionesX[i] = valorx;
             valorx += valor/9;
@@ -65,6 +70,7 @@ public class LineasRectangulosColores {
             i++;}
         
 
+        // tablero principal
         int[][] tablero = new int[9][9];
         i = 0;
         while (tablero.length > i) {
@@ -73,12 +79,14 @@ public class LineasRectangulosColores {
                 tablero[i][j] = 0;
                 j++;}
             i++;}
+
         // del 1 al 6 son los circulos, el 7 es el cuadrado
         // 1 es azul, 2 rojo, 3, amarillo, 4 verde, 5 rosado, 6 naranja
         // 7 es el cuadrado magenta
         int[] piezas = {1,2,3,4,5,6,7};
         int[][] primeras3Piezas = inicializarTablero(piezas, tablero);
         boolean repetir = true;
+        // comprobacion de que las 3 primera piezas son distintas, de ser iguales, se repite
         while ( repetir == true) {
             if (primeras3Piezas[0][1] == primeras3Piezas[1][1] && primeras3Piezas[0][2] == primeras3Piezas[1][2]) {primeras3Piezas = inicializarTablero(piezas, tablero);}
             else if (primeras3Piezas[0][1] == primeras3Piezas[2][1] && primeras3Piezas[0][2] == primeras3Piezas[2][2]) {primeras3Piezas = inicializarTablero(piezas, tablero);}
@@ -87,6 +95,7 @@ public class LineasRectangulosColores {
         }
 
         i = 0;
+        // dibujando primeras piezas
         while (primeras3Piezas.length > i) {
             Colores color;
             if (primeras3Piezas[i][0] == 1) {color = Colores.BLUE;}
@@ -103,6 +112,7 @@ public class LineasRectangulosColores {
             tablero[primeras3Piezas[i][1]][primeras3Piezas[i][2]]=primeras3Piezas[i][0];
             i++;}
 
+        // dibujar puntaje
         valorx = mt.XMAX/2 - valor/2 + valor/6;
         valory = mt.YMAX/2 - valor/2 + valor/6;
         mt.dibujarString("Puntaje:", valorx + valor/2 + valor/6, valory - valor/3 + 15);
@@ -110,19 +120,19 @@ public class LineasRectangulosColores {
         int[] proximosObjetos = obtenerProximosObjetos(mt, piezas, valor);
         mt.mostrar();
         
+        // movimientos en el juego y acciones
         int[][] nuevoTablero = tablero;
         boolean finalizarJuego = true;
         while (finalizarJuego == true) {
-		// AQUI ESTA
-            int[][] tableroParaComparar = devolverTablero(nuevoTablero);
             nuevoTablero = obtenerJugadaValida(mt, nuevoTablero, tableroPosicionesX, tableroPosicionesY, valor, valorx, valory);
-            //if (tableroParaComparar == nuevoTablero) {System.out.println("No realizo ningun cambio"); finalizarJuego = false;}
-            //else {
+            if (nuevoTablero[0][0] == -1) {System.out.println("Numero de intentos excedidos. Gracias por jugar."); finalizarJuego = false;}
+            else {
                 if (tableroLleno(nuevoTablero) == true) {System.out.println("El juego ha acabado, el tablero esta lleno. Gracias por jugar"); break;}
                 else {
-                    nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY);
+                    nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY, valorx, valory);
                     proximosObjetos = obtenerProximosObjetos(mt, piezas, valor);
-                }//}
+                }
+            }
             mt.repintar();
         }
         mt.terminar();
@@ -167,6 +177,7 @@ public class LineasRectangulosColores {
         return tableroModificado;
     }
 
+    // Metodo para dibujar las lineas horizontales del tablero
     public static /*@ pure */ void casillasTableroHorizontal(MaquinaDeTrazados mt, int valorx, int valory, int valor) {
         mt.dibujarString("0", valorx - valor/15, valory + valor/15);
         int desplazamientoy = valor/9;
@@ -195,6 +206,7 @@ public class LineasRectangulosColores {
         mt.dibujarString("8", valorx - valor/15, valory + valor/15 + desplazamientoy);
     }
 
+    // Metodo para dibujar las lineas verticales del tablero
     public static /*@ pure */ void casillasTableroVertical(MaquinaDeTrazados mt, int valorx, int valory, int valor) {
         mt.dibujarString("0", valorx + valor/24, valory - valor/24);
         int desplazamientox = valor/9;
@@ -223,6 +235,7 @@ public class LineasRectangulosColores {
         mt.dibujarString("8", valorx + valor/24 + desplazamientox, valory - valor/24);
     }
 
+    // Metodo para elegir y dibujar proximos objetos del tablero
     public static /*@ pure */ int[]  obtenerProximosObjetos(MaquinaDeTrazados mt, int[] piezas, int valor) {
         int[] piezasProximas = new int[3];
         piezasProximas[0] = (int) (Math.random()*piezas.length+1);
@@ -248,7 +261,8 @@ public class LineasRectangulosColores {
         return piezasProximas;
     }
 
-    public static /*@ pure */ int[][] agregarProximosObjetos(MaquinaDeTrazados mt, int[][] nuevoTablero, int[] proximosObjetos, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY) {
+    // Metodo para agregar los objetos que estaban proximos a agregar en el tablero
+    public static /*@ pure */ int[][] agregarProximosObjetos(MaquinaDeTrazados mt, int[][] nuevoTablero, int[] proximosObjetos, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int valorx, int valory) {
         int i = 0;
         int[][] tablero = nuevoTablero;
         mt.dibujarRectanguloLleno(mt.XMAX/20 + valor/4 + valor/18, mt.YMAX/10 - mt.YMAX/15, valor/2 , valor/4, Colores.DARK_GRAY);
@@ -261,9 +275,12 @@ public class LineasRectangulosColores {
                 i++;}
             else {}
         }
+        casillasTableroHorizontal(mt, valorx, valory, valor);
+        casillasTableroVertical(mt, valorx, valory, valor);
         return tablero;
     }
 
+    // Metodo para pedir al usuario coordenadas de la casilla del objeto
     public static /*@ pure */ int pedirCoordenada(){
         Scanner leer = new Scanner (System.in);
         int coordenada = leer.nextInt();
@@ -277,6 +294,7 @@ public class LineasRectangulosColores {
                 a++;
             }
         }
+        // si a >= 4, significa que el usuario excedio el limite de intentos. -1 es solo para identificar esto
         if (a >= 4) {coordenada = -1;}
         else {}
         return coordenada;
@@ -291,15 +309,19 @@ public class LineasRectangulosColores {
             System.out.println("Debe ingresar la coordenada origen de su figura a mover");
             System.out.println("Por favor ingrese el numero de columna de la figura a mover: ");
             int coordenada1 = pedirCoordenada();
+            // si devuelve -1, se rompe el while
             if (coordenada1 == -1) {u = 6; break;}
             else {}
             System.out.println("Por favor ingrese el numero de fila de la figura a mover: ");
             int coordenada2 = pedirCoordenada();
+            // si devuelve -1, se rompe el while
             if (coordenada2 == -1) {u = 6; break;}
             else {}
+            // si la coordenada dada contiene un objeto, se pocede
             if (tablero[coordenada1][coordenada2] != 0) {
                 comprobarJugadaValida = true;
                 while (comprobarJugadaValida == true) {
+                    // se evaluan los casos de dificultad para ver si el objeto se puede mover
                     if (coordenada1 == 8 && coordenada2 == 8) {
                         if (tablero[7][7] == 0 || tablero[7][8] == 0 || tablero[8][7] == 0){break;}
                         else {comprobarJugadaValida= false;}}
@@ -347,12 +369,15 @@ public class LineasRectangulosColores {
                 System.out.println("Ahora debe ingresar la coordenada destino de su figura a mover");
                 System.out.println("Por favor ingrese el numero destino de columna de la figura a mover: ");
 		    	int coordenada3 = pedirCoordenada();
+                // si devuelve -1, se rompe el while
                 if (coordenada3 == -1) {u = 6; break;}
                 else {}
                 System.out.println("Por favor ingrese el numero destino de fila de la figura a mover: ");
                 int coordenada4 = pedirCoordenada();
+                // si devuelve -1, se rompe el while
                 if (coordenada4 == -1) {u = 6; break;}
                 else {}
+                // si la coordenada dada en el tablero es 0, significa que no hay objetos
                 if (tablero[coordenada3][coordenada4] == 0) {
                     nuevoTablero[coordenada3][coordenada4] = tablero[coordenada1][coordenada2];
                     nuevoTablero[coordenada1][coordenada2] = 0;
@@ -369,11 +394,13 @@ public class LineasRectangulosColores {
             else {System.out.println("La jugada que intenta realizar no es valida, el objeto se encuentra rodeado de otros obejtos. Intente de nuevo");}
             u++;
         }
-        if (u < 8) {System.out.println("Excedio el numero maximo de intentos");}
+        // si u < 8 significa que se excedio el numero de intentos para registrar una coordenada correcta. -1 es para identificar que esto sucedio
+        if (u < 8) {System.out.println("Excedio el numero maximo de intentos"); nuevoTablero[0][0] = -1;}
         else {System.out.println("El cambio ha sido realizado con exito");}
         return nuevoTablero;
     }
 
+    // Metodo para dibujar el movimiento de objeto en el tablero
     public static /*@ pure */ void dibujarAlMover(MaquinaDeTrazados mt, int coordenada3, int coordenada4, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int[][] nuevoTablero) {
             Colores color;
             if (nuevoTablero[coordenada3][coordenada4] == 1) {color = Colores.BLUE;}
@@ -389,6 +416,7 @@ public class LineasRectangulosColores {
             mt.mostrar();
     }
 
+    // Metodo para dibujar los objetos que era proximos en el tablero
     public static /*@ pure */ void dibujarLosProximosObjetos(MaquinaDeTrazados mt, int objeto, int x, int y, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int[][] nuevoTablero) {
             Colores color;
             if (objeto == 1) {color = Colores.BLUE;}
@@ -404,6 +432,7 @@ public class LineasRectangulosColores {
             mt.mostrar();
     }
 
+    // Metodo que verifica si el tablero esta lleno
     public static /* pure */ boolean tableroLleno(int[][] nuevoTablero) {
         int i = 0;
         boolean comprobarTablero = true;
@@ -416,6 +445,4 @@ public class LineasRectangulosColores {
         i++;}
         return comprobarTablero;
     }
-
-    public static /*@ pure */ int[][] devolverTablero(int[][] nuevoTablero) {return nuevoTablero;}
 }
