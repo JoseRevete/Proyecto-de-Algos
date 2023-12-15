@@ -10,11 +10,11 @@ public class LineasRectangulosColores {
         inicializarJuego();
 
         // Dibujo de tablero
-        MaquinaDeTrazados mt = new MaquinaDeTrazados(700,700, "Juego Tablero", Colores.DARK_GRAY);
-        mt.dibujarOvaloLleno(mt.XMAX/2 - 150, mt.YMAX/2 -150, mt.XMAX, mt.YMAX, Colores.GRAY);
+        MaquinaDeTrazados mt = new MaquinaDeTrazados(700,700, "Juego Tablero", Colores.GRAY);
+        mt.dibujarOvaloLleno(mt.XMAX/2 - 150, mt.YMAX/2 -150, mt.XMAX, mt.YMAX, Colores.DARK_GRAY);
         mt.dibujarOvaloLleno(mt.XMAX/2 - 110, mt.YMAX/2 -110, mt.XMAX, mt.YMAX, Colores.BLACK);
-        mt.dibujarOvaloLleno(mt.XMAX/2 - 80, mt.YMAX/2 - 80, mt.XMAX, mt.YMAX, Colores.DARK_GRAY);
-        mt.dibujarOvaloLleno(mt.XMAX/2 - 40, mt.YMAX/2 - 40, mt.XMAX, mt.YMAX, Colores.GRAY);
+        mt.dibujarOvaloLleno(mt.XMAX/2 - 80, mt.YMAX/2 - 80, mt.XMAX, mt.YMAX, Colores.GRAY);
+        mt.dibujarOvaloLleno(mt.XMAX/2 - 40, mt.YMAX/2 - 40, mt.XMAX, mt.YMAX, Colores.DARK_GRAY);
         mt.configurarFuente("Monospaced", Font.PLAIN, 24);
 
         mt.dibujarRectanguloLleno(40,20, 20, 180, Colores.BLACK);
@@ -125,15 +125,35 @@ public class LineasRectangulosColores {
         // movimientos en el juego y acciones
         int[][] nuevoTablero = tablero;
         boolean finalizarJuego = true;
+        
+        puntaje = 0;
         while (finalizarJuego == true) {
+            boolean verificar = true;
             nuevoTablero = obtenerJugadaValida(mt, nuevoTablero, tableroPosicionesX, tableroPosicionesY, valor, valorx, valory);
             if (nuevoTablero[0][0] == -1) {System.out.println("Numero de intentos excedidos. Gracias por jugar."); finalizarJuego = false;}
             else {
                 if (tableroLleno(nuevoTablero) == true) {System.out.println("El juego ha acabado, el tablero esta lleno. Gracias por jugar"); break;}
                 else {
-                    nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY, valorx, valory);
-                    proximosObjetos = obtenerProximosObjetos(mt, piezas, valor, nuevoTablero);
-                    if (tableroLleno(nuevoTablero) == true) {System.out.println("El juego ha acabado, el tablero esta lleno. Gracias por jugar"); break;}
+                    nuevoTablero = procesarObjetosDelTablero(mt, nuevoTablero, valor, tableroPosicionesX, tableroPosicionesY, valorx, valory);
+
+                    i = 0;
+                    while (nuevoTablero.length > i) {
+                        j = 0;
+                        while (nuevoTablero[i].length > j) {
+                            //System.out.println(nuevoTablero[i][j]);
+                            if (nuevoTablero[i][j] <= -5) {puntaje += (-1)*(nuevoTablero[i][j]);
+                                nuevoTablero[i][j] = 0; verificar = false;}
+                            else {}
+                            j++;}
+                        i++;}
+
+                    mt.dibujarRectanguloLleno( valorx + valor/2 + valor/6 + valor/9, valory - valor/7- valor/25, valor/7, valor/9, Colores.GRAY);
+                    mt.dibujarString(""+puntaje, valorx + valor/2 + valor/6 + valor/9, valory - valor/7- valor/25);
+                    if (verificar == true) {
+                        nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY, valorx, valory);
+                        proximosObjetos = obtenerProximosObjetos(mt, piezas, valor, nuevoTablero);
+                        if (tableroLleno(nuevoTablero) == true) {System.out.println("El juego ha acabado, el tablero esta lleno. Gracias por jugar"); break;}
+                    }
                 }
             }
             mt.repintar();
@@ -391,10 +411,11 @@ public class LineasRectangulosColores {
         int i = 0;
         int h = 0;
         int[][] tablero = nuevoTablero;
-        mt.dibujarRectanguloLleno(mt.XMAX/20 + valor/4 + valor/18, mt.YMAX/10 - mt.YMAX/15, valor/2 , valor/4, Colores.DARK_GRAY);
+        mt.dibujarRectanguloLleno(mt.XMAX/20 + valor/4 + valor/18, mt.YMAX/10 - mt.YMAX/15, valor/2 , valor/4, Colores.GRAY);
         //@ maintaining i <= proximosObjetos.length;
         //@ decreases 1000 - h;
         while (i < proximosObjetos.length) {
+            if(tableroLleno(nuevoTablero) == true) {break;}
             int x = (int) (Math.random()*nuevoTablero.length);
             int y = (int) (Math.random()*nuevoTablero.length);
             if (tablero[x][y] == 0) {
@@ -637,5 +658,261 @@ public class LineasRectangulosColores {
             j++;}
         i++;}
         return comprobarTablero;
+    }
+
+    public static /*@ pure */ int[][] procesarObjetosDelTablero(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int valorx, int valory) {
+        int[][] nuevoTablero1 = nuevoTablero;
+        int[][] verificarEliminacion = new int[9][9];
+        int i = 0 ;
+        int j = 0;
+        int conteo = 0;
+        while (verificarEliminacion.length > i){
+            j = 0;
+            while (verificarEliminacion[i].length > j) { verificarEliminacion[i][j] = 0;j++;}
+            i++;}
+
+        i = 0;
+        while (nuevoTablero1.length > i) {
+            j = 0 ;
+            while (nuevoTablero1[i].length > j) {
+                if (1 <= nuevoTablero1[i][j] && nuevoTablero1[i][j] <= 6) {verificarEliminacion = contarCirculos(mt, nuevoTablero1, valor, tableroPosicionesX, tableroPosicionesY, i, j, verificarEliminacion);}
+                else if (nuevoTablero1[i][j] == 7) {verificarEliminacion = contarCuadrados(mt, nuevoTablero, valor, tableroPosicionesX, tableroPosicionesY, i, j, verificarEliminacion);}
+                else {}
+            j++;}
+        i++;}
+
+        for (i = 0;  i < verificarEliminacion.length; i++){
+            for (j = 0;  j < verificarEliminacion[i].length; j++){
+                System.out.print(verificarEliminacion[j][i]+" ");
+            }System.out.println("");
+        }
+        nuevoTablero1 = eliminarObjetos(mt, nuevoTablero, valor, tableroPosicionesX, tableroPosicionesY, verificarEliminacion, valorx, valory);
+        i = 0;
+        int c1 = 0;
+        int c2 = 0;
+        while (verificarEliminacion.length > i) {
+            j = 0;
+            while (verificarEliminacion[i].length > j) {
+                if (verificarEliminacion[i][j] == 1) {verificarEliminacion[i][j] = 0;conteo++;c1=i;c2=j;}
+                else{}
+                j++;}
+            i++;}
+        
+        for (i = 0;  i < nuevoTablero1.length; i++){
+            for (j = 0;  j < nuevoTablero1[i].length; j++){
+                System.out.print(nuevoTablero1[j][i]+" ");
+            }System.out.println("");
+        }
+
+        if (conteo == 4) {nuevoTablero1[c1][c2] -= 5;}
+        else if (conteo == 5){nuevoTablero1[c1][c2] -= 10;}
+        else if (conteo == 6){nuevoTablero1[c1][c2] -= 12;}
+        else if (conteo == 7){nuevoTablero1[c1][c2] -= 18;}
+        else if (conteo >= 8){nuevoTablero1[c1][c2] -= 40;}
+        else {}
+
+        return nuevoTablero1;
+    }
+
+    public static /*@ pure */ int[][] contarCuadrados(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int coordenada4, int coordenada3, int[][] verificarEliminacion) {
+        int[][] nuevoTablero1 = nuevoTablero;
+        int objeto = nuevoTablero[coordenada4][coordenada3];
+        int i = 0;
+        int j = 0;
+        int c3 = coordenada3;
+        int c4 = coordenada4;
+        int[][] verificarEliminacion1 = verificarEliminacion;
+        System.out.println("si3");
+
+        int conteo = 0;
+        if (coordenada4 < 7 && coordenada3 < 7) {
+            if (objeto == nuevoTablero[coordenada4][coordenada3] && objeto == nuevoTablero[coordenada4][coordenada3+1] && objeto == nuevoTablero[coordenada4][coordenada3+2] && objeto == nuevoTablero[coordenada4+1][coordenada3] && objeto == nuevoTablero[coordenada4+1][coordenada3+1] && objeto == nuevoTablero[coordenada4+1][coordenada3+2] && objeto == nuevoTablero[coordenada4+2][coordenada3] && objeto == nuevoTablero[coordenada4+2][coordenada3+1] && objeto == nuevoTablero[coordenada4+2][coordenada3+2]) {
+                i = 0;
+                while (3 > i) {
+                    j = 0;
+                    while (3 > j) {
+                        verificarEliminacion1[c4][c3] = 1;
+                    j++; c3++;}
+                i++; c4++;}}
+
+            else if (objeto == nuevoTablero[coordenada4][coordenada3] && objeto == nuevoTablero[coordenada4][coordenada3+1] && objeto == nuevoTablero[coordenada4+1][coordenada3] && objeto == nuevoTablero[coordenada4+1][coordenada3+1]) {
+                i = 0;
+                while (2 > i) {
+                    j = 0;
+                    while (2 > j) {
+                        verificarEliminacion1[c4][c3] = 1;
+                    j++; c4++;}
+                i++; c3++;}}
+
+            else {}}
+
+        else if (coordenada4 < 8 && coordenada3 < 8) {
+            if (objeto == nuevoTablero[coordenada4][coordenada3] && objeto == nuevoTablero[coordenada4][coordenada3+1] && objeto == nuevoTablero[coordenada4+1][coordenada3] && objeto == nuevoTablero[coordenada4+1][coordenada3+1]) {
+                i = 0;
+                while (2 > i) {
+                    j = 0;
+                    while (2 > j) {
+                        verificarEliminacion1[c4][c3] = 1;
+                    j++; c3++;}
+                i++; c4++;}}
+
+            else {}}
+
+        else {}
+        return verificarEliminacion1;
+    }
+
+    public static /*@ pure */ int[][] contarCirculos(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int coordenada4, int coordenada3, int[][] verificarEliminacion) {
+        int i;
+        int j;
+        int vertical = 0;
+        int horizontal = 0;
+        int diagonal = 0;
+        int diagonalinversa = 0;
+        int[][] nuevoTablero1 = nuevoTablero;
+        int objeto = nuevoTablero1[coordenada4][coordenada3];
+        System.out.println(objeto+"  con c4 :"+coordenada4+"  c3: "+coordenada3);
+        System.out.println(nuevoTablero1[coordenada3][coordenada4]+"  con c3 :"+coordenada3+"  c4: "+coordenada4);
+
+
+        if (coordenada3 <= 4 && coordenada4 <= 4) {
+            // contar en columna
+            i = coordenada3;
+            while (nuevoTablero.length > i) {
+                if (objeto == nuevoTablero1[coordenada4][i]) {vertical +=1;}
+                else {break;}
+                i++;}
+            if (vertical >= 5) {
+                i = coordenada3;
+                while (nuevoTablero.length > i) {
+                    if (objeto == nuevoTablero1[coordenada4][i]) {verificarEliminacion[coordenada4][i]= 1;}
+                    else {}
+                    i++;}}
+            else {}
+
+            // contar en fila
+            i = coordenada4;
+            while (nuevoTablero.length > i) {
+                if (objeto == nuevoTablero1[i][coordenada3]) {horizontal +=1;}
+                else {break;}
+                i++;}
+            if (horizontal >= 5) {
+                i = coordenada4;
+                while (nuevoTablero.length > i) {
+                    if (objeto == nuevoTablero1[i][coordenada3]) {verificarEliminacion[i][coordenada3]= 1;}
+                    else {}
+                    i++;}}
+            else {}
+
+            // contar en diagonal
+            i = coordenada4;
+            j = coordenada3;
+            while (nuevoTablero.length > i) {
+                if (objeto == nuevoTablero1[i][j]) {
+                    diagonal +=1;}
+                else {break;}
+                i++;j++;}
+            if (diagonal >= 5) {
+                i = coordenada4;
+                j = coordenada3;
+                while (nuevoTablero.length > i) {
+                    if (objeto == nuevoTablero1[i][j]){verificarEliminacion[i][j]= 1;}
+                    else {}
+                    i++;j++;}}
+            else {}
+
+            if (coordenada3 == 4 && coordenada4 == 4) {
+
+                // contar en diagonal inversa
+                i = coordenada4;
+                j = coordenada3;
+                while (0 <= i && j <= 8) {
+                    if (objeto == nuevoTablero1[i][j]) {
+                        diagonalinversa +=1;}
+                    else {break;}
+                    i++;j--;}
+                if (diagonalinversa >= 5) {
+                    i = coordenada4;
+                    j = coordenada3;
+                    while (0 <= i && j <= 8) {
+                        if (objeto == nuevoTablero1[i][j]){verificarEliminacion[i][j]= 1;}
+                        else {}
+                        i--;j++;}}
+                else{}
+            }
+        }
+
+        else if (coordenada4 <= 4 && coordenada3 > 4) {
+            // contar en fila
+            i = coordenada4;
+            while (nuevoTablero.length > i) {
+                if (objeto == nuevoTablero1[i][coordenada3]) {horizontal +=1;}
+                else {break;}
+                i++;}
+            if (horizontal == 5) {
+                i = coordenada4;
+                while (nuevoTablero.length > i) {
+                    if (objeto == nuevoTablero1[i][coordenada3]) {verificarEliminacion[i][coordenada3]= 1;}
+                    else {}
+                    i++;}}
+            else {}
+
+        }
+
+        else if (coordenada4 > 4 && coordenada3 <= 4) {
+            // contar en columna
+            i = coordenada3;
+            while (nuevoTablero.length > i) {
+                if (objeto == nuevoTablero1[coordenada4][i]) {vertical +=1;}
+                else {break;}
+                i++;}
+            if (vertical >= 5) {
+                i = coordenada3;
+                while (nuevoTablero.length > i) {
+                    if (objeto == nuevoTablero1[coordenada4][i]) {verificarEliminacion[coordenada4][i]= 1;}
+                    else {}
+                    i++;}}
+            else {}
+            
+
+            // contar en diagonal inversa
+            i = coordenada4;
+            j = coordenada3;
+            while (0 <= i && j <= 8) {
+                System.out.println("c4: "+i+"  c3: "+j+"  o: "+nuevoTablero1[i][j]+"   obj: "+objeto);
+                if (objeto == nuevoTablero1[i][j]) {
+                    diagonalinversa +=1;}
+                else {break;}
+                i--;j++;}
+                System.out.println(diagonalinversa);
+            if (diagonalinversa >= 5) {
+                i = coordenada4;
+                j = coordenada3;
+                while (0 <= i && j <= 8) {
+                    if (objeto == nuevoTablero1[i][j]){verificarEliminacion[i][j]= 1;}
+                    else {}
+                    i--;j++;}}
+            else{}
+        }
+        else {}
+        return verificarEliminacion;
+    }
+
+    public static /*@ pure */ int[][] eliminarObjetos(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int[][] verificarEliminacion, int valorx, int valory) {
+        int i = 0;
+        int j = 0;
+        int[][] nuevoTablero1 = nuevoTablero;
+        System.out.println("si166");
+
+        while (verificarEliminacion.length > i) {
+            j = 0;
+            while (verificarEliminacion[i].length > j) {
+                if (verificarEliminacion[i][j] == 1) {mt.dibujarRectanguloLleno(tableroPosicionesX[i], tableroPosicionesY[j], valor/9, valor/9, Colores.WHITE); nuevoTablero1[i][j] = 0;}
+                else{}
+                j++;}
+            i++;}
+        casillasTableroHorizontal(mt, valorx, valory, valor);
+        casillasTableroVertical(mt, valorx, valory, valor);
+        return nuevoTablero1;
     }
 }
