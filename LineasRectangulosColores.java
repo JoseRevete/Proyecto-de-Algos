@@ -147,8 +147,8 @@ public class LineasRectangulosColores {
                             j++;}
                         i++;}
 
-                    mt.dibujarRectanguloLleno( valorx + valor/2 + valor/6 + valor/9, valory - valor/7- valor/25, valor/7, valor/9, Colores.GRAY);
-                    mt.dibujarString(""+puntaje, valorx + valor/2 + valor/6 + valor/9, valory - valor/7- valor/25);
+                    mt.dibujarRectanguloLleno( valorx + valor/2 + valor/6 + valor/18, valory - valor/7- valor/10, valor/7, valor/10, Colores.GRAY);
+                    mt.dibujarString(""+puntaje+"", valorx + valor/2 + valor/6 + valor/9, valory - valor/7- valor/25);
                     if (verificar == true) {
                         nuevoTablero = agregarProximosObjetos(mt, nuevoTablero, proximosObjetos, valor, tableroPosicionesX, tableroPosicionesY, valorx, valory);
                         proximosObjetos = obtenerProximosObjetos(mt, piezas, valor, nuevoTablero);
@@ -660,20 +660,37 @@ public class LineasRectangulosColores {
         return comprobarTablero;
     }
 
+    // Metodo para chequear cada elemento del tablero y asi saber si se tiene que eliminar alguna combinacion
+    //@ requires mt.XMAX > 0 && mt.YMAX > 0;
+    //@ requires valor >= 0;
+    //@ requires tableroPosicionesX.length == 9;
+    //@ requires tableroPosicionesY.length == 9;
+    //@ requires nuevoTablero.length == 9 && (\forall int i ; 0 <= i && i < nuevoTablero.length ; nuevoTablero[i].length == 9);
+    //@ requires valorx >= 0;
+    //@ requires valory >= 0;
+    //@ ensures (\result == nuevoTablero) || (\result != nuevoTablero);
     public static /*@ pure */ int[][] procesarObjetosDelTablero(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int valorx, int valory) {
         int[][] nuevoTablero1 = nuevoTablero;
         int[][] verificarEliminacion = new int[9][9];
         int i = 0 ;
         int j = 0;
         int conteo = 0;
+        //@ maintaining verificarEliminacion.length >= i;
+        //@ decreases verificarEliminacion.length - i;
         while (verificarEliminacion.length > i){
             j = 0;
+            //@ maintaining verificarEliminacion[i].length >= j;
+            //@ decreases verificarEliminacion[i].length - j;
             while (verificarEliminacion[i].length > j) { verificarEliminacion[i][j] = 0;j++;}
             i++;}
 
         i = 0;
+        //@ maintaining nuevoTablero1.length >= i;
+        //@ decreases nuevoTablero1.length - i;
         while (nuevoTablero1.length > i) {
             j = 0 ;
+            //@ maintaining nuevoTablero1[i].length >= j;
+            //@ decreases nuevoTablero1[i].length - j;
             while (nuevoTablero1[i].length > j) {
                 if (1 <= nuevoTablero1[i][j] && nuevoTablero1[i][j] <= 6) {verificarEliminacion = contarCirculos(mt, nuevoTablero1, valor, tableroPosicionesX, tableroPosicionesY, i, j, verificarEliminacion);}
                 else if (nuevoTablero1[i][j] == 7) {verificarEliminacion = contarCuadrados(mt, nuevoTablero, valor, tableroPosicionesX, tableroPosicionesY, i, j, verificarEliminacion);}
@@ -681,29 +698,22 @@ public class LineasRectangulosColores {
             j++;}
         i++;}
 
-        for (i = 0;  i < verificarEliminacion.length; i++){
-            for (j = 0;  j < verificarEliminacion[i].length; j++){
-                System.out.print(verificarEliminacion[j][i]+" ");
-            }System.out.println("");
-        }
         nuevoTablero1 = eliminarObjetos(mt, nuevoTablero, valor, tableroPosicionesX, tableroPosicionesY, verificarEliminacion, valorx, valory);
         i = 0;
         int c1 = 0;
         int c2 = 0;
+        //@ maintaining verificarEliminacion.length >= i;
+        //@ decreases verificarEliminacion.length - i;
         while (verificarEliminacion.length > i) {
             j = 0;
+            //@ maintaining verificarEliminacion[i].length >= j;
+            //@ decreases verificarEliminacion[i].length - j;
             while (verificarEliminacion[i].length > j) {
                 if (verificarEliminacion[i][j] == 1) {verificarEliminacion[i][j] = 0;conteo++;c1=i;c2=j;}
                 else{}
                 j++;}
             i++;}
         
-        for (i = 0;  i < nuevoTablero1.length; i++){
-            for (j = 0;  j < nuevoTablero1[i].length; j++){
-                System.out.print(nuevoTablero1[j][i]+" ");
-            }System.out.println("");
-        }
-
         if (conteo == 4) {nuevoTablero1[c1][c2] -= 5;}
         else if (conteo == 5){nuevoTablero1[c1][c2] -= 10;}
         else if (conteo == 6){nuevoTablero1[c1][c2] -= 12;}
@@ -714,6 +724,16 @@ public class LineasRectangulosColores {
         return nuevoTablero1;
     }
 
+    // Metodo para contar la cantidad de cuadrados que forman matrices nxn
+    //@ requires mt.XMAX > 0 && mt.YMAX > 0;
+    //@ requires valor >= 0;
+    //@ requires tableroPosicionesX.length == 9;
+    //@ requires tableroPosicionesY.length == 9;
+    //@ requires nuevoTablero.length == 9 && (\forall int i ; 0 <= i && i < nuevoTablero.length ; nuevoTablero[i].length == 9);
+    //@ requires 0 <= coordenada4 && coordenada4 <= 8;
+    //@ requires verificarEliminacion.length == 9 && (\forall int j ; 0 <= j && j < verificarEliminacion.length ; verificarEliminacion[j].length == 9);
+    //@ requires 0 <= coordenada3 && coordenada3 <= 8;
+    //@ ensures (verificarEliminacion == \result) || (verificarEliminacion != \result);
     public static /*@ pure */ int[][] contarCuadrados(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int coordenada4, int coordenada3, int[][] verificarEliminacion) {
         int[][] nuevoTablero1 = nuevoTablero;
         int objeto = nuevoTablero[coordenada4][coordenada3];
@@ -722,23 +742,34 @@ public class LineasRectangulosColores {
         int c3 = coordenada3;
         int c4 = coordenada4;
         int[][] verificarEliminacion1 = verificarEliminacion;
-        System.out.println("si3");
 
         int conteo = 0;
         if (coordenada4 < 7 && coordenada3 < 7) {
             if (objeto == nuevoTablero[coordenada4][coordenada3] && objeto == nuevoTablero[coordenada4][coordenada3+1] && objeto == nuevoTablero[coordenada4][coordenada3+2] && objeto == nuevoTablero[coordenada4+1][coordenada3] && objeto == nuevoTablero[coordenada4+1][coordenada3+1] && objeto == nuevoTablero[coordenada4+1][coordenada3+2] && objeto == nuevoTablero[coordenada4+2][coordenada3] && objeto == nuevoTablero[coordenada4+2][coordenada3+1] && objeto == nuevoTablero[coordenada4+2][coordenada3+2]) {
                 i = 0;
+                c3 = coordenada3;
+                //@ maintaining 3 >= i;
+                //@ decreases 3- i;
                 while (3 > i) {
                     j = 0;
+                    c4 = coordenada4;
+                    //@ maintaining 3 >= j;
+                    //@ decreases 3- j;
                     while (3 > j) {
                         verificarEliminacion1[c4][c3] = 1;
-                    j++; c3++;}
-                i++; c4++;}}
+                    j++; c4++;}
+                i++; c3++;}}
 
             else if (objeto == nuevoTablero[coordenada4][coordenada3] && objeto == nuevoTablero[coordenada4][coordenada3+1] && objeto == nuevoTablero[coordenada4+1][coordenada3] && objeto == nuevoTablero[coordenada4+1][coordenada3+1]) {
                 i = 0;
+                c3 = coordenada3;
+                //@ maintaining 2 >= i;
+                //@ decreases 2- i;
                 while (2 > i) {
                     j = 0;
+                    c4 = coordenada4;
+                    //@ maintaining 2 >= j;
+                    //@ decreases 2- j;
                     while (2 > j) {
                         verificarEliminacion1[c4][c3] = 1;
                     j++; c4++;}
@@ -749,12 +780,18 @@ public class LineasRectangulosColores {
         else if (coordenada4 < 8 && coordenada3 < 8) {
             if (objeto == nuevoTablero[coordenada4][coordenada3] && objeto == nuevoTablero[coordenada4][coordenada3+1] && objeto == nuevoTablero[coordenada4+1][coordenada3] && objeto == nuevoTablero[coordenada4+1][coordenada3+1]) {
                 i = 0;
+                c3 = coordenada3;
+                //@ maintaining 2 >= i;
+                //@ decreases 2 - i;
                 while (2 > i) {
                     j = 0;
+                    c4 = coordenada4;
+                    //@ maintaining 2 >= j;
+                    //@ decreases 2- j;
                     while (2 > j) {
                         verificarEliminacion1[c4][c3] = 1;
-                    j++; c3++;}
-                i++; c4++;}}
+                    j++; c4++;}
+                i++; c3++;}}
 
             else {}}
 
@@ -762,6 +799,16 @@ public class LineasRectangulosColores {
         return verificarEliminacion1;
     }
 
+    // Metodo para contar la cantidad de circulos que su combinacion formas lineas de 5 o mas objetos
+    //@ requires mt.XMAX > 0 && mt.YMAX > 0;
+    //@ requires valor >= 0;
+    //@ requires tableroPosicionesX.length == 9;
+    //@ requires tableroPosicionesY.length == 9;
+    //@ requires nuevoTablero.length == 9 && (\forall int i ; 0 <= i && i < nuevoTablero.length ; nuevoTablero[i].length == 9);
+    //@ requires 0 <= coordenada4 && coordenada4 <= 8;
+    //@ requires verificarEliminacion.length == 9 && (\forall int j ; 0 <= j && j < verificarEliminacion.length ; verificarEliminacion[j].length == 9);
+    //@ requires 0 <= coordenada3 && coordenada3 <= 8;
+    //@ ensures (verificarEliminacion == \result) || (verificarEliminacion != \result);
     public static /*@ pure */ int[][] contarCirculos(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int coordenada4, int coordenada3, int[][] verificarEliminacion) {
         int i;
         int j;
@@ -771,19 +818,21 @@ public class LineasRectangulosColores {
         int diagonalinversa = 0;
         int[][] nuevoTablero1 = nuevoTablero;
         int objeto = nuevoTablero1[coordenada4][coordenada3];
-        System.out.println(objeto+"  con c4 :"+coordenada4+"  c3: "+coordenada3);
-        System.out.println(nuevoTablero1[coordenada3][coordenada4]+"  con c3 :"+coordenada3+"  c4: "+coordenada4);
 
 
         if (coordenada3 <= 4 && coordenada4 <= 4) {
             // contar en columna
             i = coordenada3;
+            //@ maintaining nuevoTablero.length >= i ;
+            //@ decreases nuevoTablero.length - i ;
             while (nuevoTablero.length > i) {
                 if (objeto == nuevoTablero1[coordenada4][i]) {vertical +=1;}
                 else {break;}
                 i++;}
             if (vertical >= 5) {
                 i = coordenada3;
+                //@ maintaining nuevoTablero.length >= i ;
+                //@ decreases nuevoTablero.length - i ;
                 while (nuevoTablero.length > i) {
                     if (objeto == nuevoTablero1[coordenada4][i]) {verificarEliminacion[coordenada4][i]= 1;}
                     else {}
@@ -792,12 +841,16 @@ public class LineasRectangulosColores {
 
             // contar en fila
             i = coordenada4;
+            //@ maintaining nuevoTablero.length >= i ;
+            //@ decreases nuevoTablero.length - i ;
             while (nuevoTablero.length > i) {
                 if (objeto == nuevoTablero1[i][coordenada3]) {horizontal +=1;}
                 else {break;}
                 i++;}
             if (horizontal >= 5) {
                 i = coordenada4;
+                //@ maintaining nuevoTablero.length >= i ;
+                //@ decreases nuevoTablero.length - i ;
                 while (nuevoTablero.length > i) {
                     if (objeto == nuevoTablero1[i][coordenada3]) {verificarEliminacion[i][coordenada3]= 1;}
                     else {}
@@ -807,6 +860,8 @@ public class LineasRectangulosColores {
             // contar en diagonal
             i = coordenada4;
             j = coordenada3;
+            //@ maintaining nuevoTablero.length >= i ;
+            //@ decreases nuevoTablero.length - i ;
             while (nuevoTablero.length > i) {
                 if (objeto == nuevoTablero1[i][j]) {
                     diagonal +=1;}
@@ -815,6 +870,8 @@ public class LineasRectangulosColores {
             if (diagonal >= 5) {
                 i = coordenada4;
                 j = coordenada3;
+                //@ maintaining nuevoTablero.length >= i ;
+                //@ decreases nuevoTablero.length - i ;
                 while (nuevoTablero.length > i) {
                     if (objeto == nuevoTablero1[i][j]){verificarEliminacion[i][j]= 1;}
                     else {}
@@ -826,14 +883,18 @@ public class LineasRectangulosColores {
                 // contar en diagonal inversa
                 i = coordenada4;
                 j = coordenada3;
+                //@ maintaining 0 <= i && j <= 8;
+                //@ decreases 9 - j;
                 while (0 <= i && j <= 8) {
                     if (objeto == nuevoTablero1[i][j]) {
                         diagonalinversa +=1;}
                     else {break;}
-                    i++;j--;}
+                    i--;j++;}
                 if (diagonalinversa >= 5) {
                     i = coordenada4;
                     j = coordenada3;
+                    //@ maintaining 0 <= i && j <= 8;
+                    //@ decreases 9 - j;
                     while (0 <= i && j <= 8) {
                         if (objeto == nuevoTablero1[i][j]){verificarEliminacion[i][j]= 1;}
                         else {}
@@ -845,12 +906,16 @@ public class LineasRectangulosColores {
         else if (coordenada4 <= 4 && coordenada3 > 4) {
             // contar en fila
             i = coordenada4;
+            //@ maintaining nuevoTablero.length >= i ;
+            //@ decreases nuevoTablero.length - i ;
             while (nuevoTablero.length > i) {
                 if (objeto == nuevoTablero1[i][coordenada3]) {horizontal +=1;}
                 else {break;}
                 i++;}
             if (horizontal == 5) {
                 i = coordenada4;
+                //@ maintaining nuevoTablero.length >= i ;
+                //@ decreases nuevoTablero.length - i ;
                 while (nuevoTablero.length > i) {
                     if (objeto == nuevoTablero1[i][coordenada3]) {verificarEliminacion[i][coordenada3]= 1;}
                     else {}
@@ -862,12 +927,16 @@ public class LineasRectangulosColores {
         else if (coordenada4 > 4 && coordenada3 <= 4) {
             // contar en columna
             i = coordenada3;
+            //@ maintaining nuevoTablero.length >= i ;
+            //@ decreases nuevoTablero.length - i ;
             while (nuevoTablero.length > i) {
                 if (objeto == nuevoTablero1[coordenada4][i]) {vertical +=1;}
                 else {break;}
                 i++;}
             if (vertical >= 5) {
                 i = coordenada3;
+                //@ maintaining nuevoTablero.length >= i ;
+                //@ decreases nuevoTablero.length - i ;
                 while (nuevoTablero.length > i) {
                     if (objeto == nuevoTablero1[coordenada4][i]) {verificarEliminacion[coordenada4][i]= 1;}
                     else {}
@@ -878,8 +947,9 @@ public class LineasRectangulosColores {
             // contar en diagonal inversa
             i = coordenada4;
             j = coordenada3;
+            //@ maintaining 0 <= i && j <= 8;
+            //@ decreases 9 - j;
             while (0 <= i && j <= 8) {
-                System.out.println("c4: "+i+"  c3: "+j+"  o: "+nuevoTablero1[i][j]+"   obj: "+objeto);
                 if (objeto == nuevoTablero1[i][j]) {
                     diagonalinversa +=1;}
                 else {break;}
@@ -888,6 +958,8 @@ public class LineasRectangulosColores {
             if (diagonalinversa >= 5) {
                 i = coordenada4;
                 j = coordenada3;
+                //@ maintaining 0 <= i && j <= 8;
+                //@ decreases 9 - j;
                 while (0 <= i && j <= 8) {
                     if (objeto == nuevoTablero1[i][j]){verificarEliminacion[i][j]= 1;}
                     else {}
@@ -898,14 +970,25 @@ public class LineasRectangulosColores {
         return verificarEliminacion;
     }
 
+    // Metodo para eliminar los objetos en las posiciones dada por la matriz verificarEliminacion
+    //@ requires mt.XMAX > 0 && mt.YMAX > 0;
+    //@ requires valor >= 0;
+    //@ requires tableroPosicionesX.length == 9;
+    //@ requires tableroPosicionesY.length == 9;
+    //@ requires nuevoTablero.length == 9 && (\forall int i ; 0 <= i && i < nuevoTablero.length ; nuevoTablero[i].length == 9);
+    //@ requires verificarEliminacion.length == 9 && (\forall int j ; 0 <= j && j < verificarEliminacion.length ; verificarEliminacion[j].length == 9);
+    //@ ensures (verificarEliminacion == \result) || (verificarEliminacion != \result);
     public static /*@ pure */ int[][] eliminarObjetos(MaquinaDeTrazados mt, int[][] nuevoTablero, int valor, int[] tableroPosicionesX, int[] tableroPosicionesY, int[][] verificarEliminacion, int valorx, int valory) {
         int i = 0;
         int j = 0;
         int[][] nuevoTablero1 = nuevoTablero;
-        System.out.println("si166");
 
+        //@ maintaining verificarEliminacion.length >= i;
+        //@ decreases verificarEliminacion.length - i;
         while (verificarEliminacion.length > i) {
             j = 0;
+            //@ maintaining verificarEliminacion[i].length >= j;
+            //@ decreases verificarEliminacion[i].length - j;
             while (verificarEliminacion[i].length > j) {
                 if (verificarEliminacion[i][j] == 1) {mt.dibujarRectanguloLleno(tableroPosicionesX[i], tableroPosicionesY[j], valor/9, valor/9, Colores.WHITE); nuevoTablero1[i][j] = 0;}
                 else{}
